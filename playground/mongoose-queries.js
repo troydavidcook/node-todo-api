@@ -33,18 +33,17 @@ var userId = '59d94cef803d220b6c85e823';
 // }).catch((err) => {
 //   console.log("Sorry, couldn't find the id", err);
 // });
-//
+
 
 if (!ObjectId.isValid(userId)) {
-  return console.log('Sorry, User Id is not valid.');
+  console.log('ID is not valid. Please try another ID');
 }
-
 User.findById(userId).then((user) => {
   if (!user) {
-    return console.log('Sorry, user not found');
+    return console.log('User not found. Please try another User ID.');
   } else {
-    console.log('User info: ', (JSON.stringify(user, undefined, 2)));
+    console.log(JSON.stringify(user, undefined, 2));
   }
 }).catch((err) => {
-  console.log('Error Occured', err);
+  console.log('Error Found:', err);
 });
