@@ -15,18 +15,21 @@ app.get('/', (req, res) => {
 });
 
 app.get('/todos/:id', (req, res) => {
-  var todoId = req.params.id;
-  if (!ObjectID.isValid(todoId)) {
-    return res.status(404).send();
-  }
-  Todo.findById(todoId).then((todo) => {
+  var todoId = (req.params.id);
+
+    if (!ObjectID.isValid(todoId)) {
+      return res.status(404).send();
+    }
+
+    Todo.findById(todoId).then((todo) => {
     if (!todo) {
       return res.status(404).send();
-    } else {
-      res.send({todo});
     }
+
+      res.send({todo});
+
   }).catch((err) => {
-    console.log('Error Found:', {});
+    res.status(400).send();
   });
 });
 
