@@ -1,3 +1,5 @@
+// This is test specific, not using live data.
+
 // testing notes   mocha, supertest
 
 const expect = require('expect');
@@ -11,10 +13,15 @@ const{Todo} = require('./../models/todo');
 const todos = [{
   _id: new ObjectID(),
   text: 'First test todo'
-},  {
+},
+  {
   _id: new ObjectID(),
-  text: 'Second test todo',
-}];
+  text: 'Second test todo'
+},
+  {
+  _id: new ObjectID(),
+  text: 'Third test todo'
+  }];
 
 beforeEach((done) => {
   Todo.remove({}).then(() => {
@@ -56,46 +63,35 @@ describe('POST /todos', () => {
         return done(err);
       }
       Todo.find().then((todos) => {
-        expect(todos.length).toBe(2);
+        expect(todos.length).toBe(3);
         done();
       }).catch((err) => done(err));
     });
   });
 });
-
+// Test for no todo, todo with invalid ID, and for all todos.
 
 describe('GET /todos', () => {
-  it('should get all todos', (done) => {
-      request(app)
-      .get('/todos')
-      .expect(200)
-      .expect((res) => {
-        expect(res.body.todos.length).toBe(2);
-      })
-      .end(done);
-  });
-});
-
-describe('GET /todos/:id', () => {
-  it('should return todo document.', (done) => {
+  it('should retrieve all todos', (done) => {
     request(app)
-    .get(`/todos/${todos[0]._id.toHexString()}`)
+    .get('/todos')
     .expect(200)
     .expect((res) => {
-      expect(res.body.todo.text).toBe(todos[0].text);
+      expect(res.body.todos.length).toBe(3)
     })
-    .end(done);
+    .end(done)
   });
-  it('should return a 404 if no todo exists.', (done) => {
-    var hexId = new ObjectID();
+  it('should return a 404 if the ObjectID is invalid', (done) => {
     request(app)
-    .get(`/todos/${hexId}`)
+    .get('/todos/123troy')
     .expect(404)
-    .end(done);
+    .end(done)
   });
-  it('should return a 404 if Object ID is invalid', (done) => {
+  it('should return a 404 if there is no todo with that ObjectID', (done) => {
+    var todoId = new ObjectID().toHexString();
     request(app)
-    .get('/todos/123tgf')
-    .end(done);
+    .get(`/todos/${todoId}`)
+    .expect(404)
+    .end(done)
   });
 });
