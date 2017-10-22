@@ -71,27 +71,49 @@ describe('POST /todos', () => {
 });
 // Test for no todo, todo with invalid ID, and for all todos.
 
-describe('GET /todos', () => {
+describe ('GET todos/', () => {
   it('should retrieve all todos', (done) => {
     request(app)
-    .get('/todos')
+    .get('/todos/')
     .expect(200)
-    .expect((res) => {
-      expect(res.body.todos.length).toBe(3)
+    .expect((response) => {
+      expect(response.body.todos.length).toBe(3)
     })
-    .end(done)
+    .end(done) 
   });
-  it('should return a 404 if the ObjectID is invalid', (done) => {
-    request(app)
-    .get('/todos/123troy')
-    .expect(404)
-    .end(done)
-  });
-  it('should return a 404 if there is no todo with that ObjectID', (done) => {
+  it('should respond with a 404 if there is no todo by that ObjectID', (done) => {
     var todoId = new ObjectID().toHexString();
     request(app)
     .get(`/todos/${todoId}`)
     .expect(404)
+    .end(done)
+  });
+  it('should respond with a 404 when there is an invalid ObjectID', (done) => {
+    request(app)
+    .get('/todos/123tdc')
+    .expect(404)
+    .end(done)
+  });
+});
+
+describe('DELETE /todos', () => {
+  it('should respond with a 404 if no todo exists with that Object ID', (done) => {
+    var todoId = new ObjectID().toHexString();
+    request(app)
+    .get(`/todos/${todoId}`)
+    .expect(404)
+    .end(done)
+  });
+  it('should respond with a 404 when there is an invalid ObjectID', (done) => {
+    request(app)
+    .get('/todos/123tdc')
+    .expect(404)
+    .end(done)
+  });
+  it('should delete a todo with the given valid Object ID', (done) => {
+    request(app)
+    .get('/todos/:id')
+    .expect(`${todos}`).toBeA('array')
     .end(done)
   });
 });
