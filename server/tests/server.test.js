@@ -20,7 +20,9 @@ const todos = [{
 },
   {
   _id: new ObjectID(),
-  text: 'Third test todo'
+  text: 'Third test todo',
+  completed: true,
+  completedAt: 123
   }];
 
 beforeEach((done) => {
@@ -129,5 +131,57 @@ describe ('GET todos/', () => {
           done();
         }).catch((err) => done(err));
       });
+  });
+});
+
+describe('PATCH /todos/:id', () => {
+  it('should update the todo', (done) => {
+    var id = todos[2]._id.toHexString();
+    var text = 'New todo text';
+
+    request(app)
+      .patch(`/todos/${id}`)
+      .send({
+        completed: true,
+        completedAt: 9876,
+        text
+      })
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.todo.text).toBe(text);
+        expect(typeof(res.body.todo.completedAt)).toEqual('number');
+        expect(res.body.todo.completed).toEqual(true);
+    })
+    .end(done);
+  });
+  it('should clear completedAt when todo is not completed', (done) => {
+    var id = todos[2]._id.toHexString();
+    var text = 'Updated to new text';
+
+    request(app)
+      .patch(`/todos/${id}`)
+      .send({
+        completed: false,
+        completedAt:
+        text
+      })
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.todo.completedAt).toBeNull();
+      })
+      .end(done)
+  });
+  it('should get 404 when Object ID is invalid', (done) => {
+    request(app)
+      .delete('/todos/123tdc')
+      .expect(404)
+      .end(done)
+  });
+  it('should get 404 there is no todo', (done) => {
+    var todoId = new ObjectID().toHexString();
+    request(app)
+      .delete(`/todos/${todoId}`)
+      .expect(404)
+      .end(done)
   });
 });
